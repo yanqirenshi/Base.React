@@ -1,0 +1,64 @@
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+
+import Graph from '../ui/SephirothicTree.js';
+
+import maneger from '../js/SephirothicTree.js';
+
+import {
+    mergeRootOrganism,
+    fildOrganisms,
+    selectOrganismNode,
+} from '../slices/page_admin.js';
+
+export default function SephirothicTree () {
+    const state = useSelector(state => state.page_admin.life);
+
+    const dispatch = useDispatch();
+
+    if (state.root.start===null)
+        dispatch(mergeRootOrganism());
+
+    if (state.netrowrk.start===null)
+        dispatch(fildOrganisms());
+
+    const graph_data = maneger.graphData();
+
+    const callbacks = {
+        operators: {
+            switch: ()=> {
+            },
+        },
+        node: {
+            click: (node, event)=> {
+                dispatch(selectOrganismNode(node));
+            },
+        }
+    };
+
+    const selected_node = maneger.getNode(state.selected.node);
+    console.log(selected_node);
+    return (
+        <div style={{width:'100%', height: '100%', overflow:'hidden'}}>
+
+          <Graph data={graph_data} callbacks={callbacks}/>
+
+          {selected_node &&
+           <Box>
+             <Paper style={{position: 'fixed',
+                            right: 0,
+                            top: 0,
+                            height: '100%',
+                            background: '#fff',
+                            width: 300,
+                            padding: 20,
+                            boxSizing: 'border-box' }}>
+             </Paper>
+           </Box>}
+
+        </div>
+    );
+}
